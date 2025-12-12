@@ -1,5 +1,9 @@
 # EcoQuest
 
+## IMPORTANT ##
+If redirect link in confirmation email sent when signing up brings user to 404 page not found error, please key in this link and login with that same account registered:
+https://building-blocs.netlify.app
+
 **EcoQuest** is a gamified sustainability platform that encourages users to complete eco-friendly quests, earn points, and donate to environmental charities. Built with React and Supabase.
 
 ---
