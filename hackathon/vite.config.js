@@ -5,4 +5,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "/",
   plugins: [react()],
+  server: {
+    // Handle client-side routing - redirect all requests to index.html
+    historyApiFallback: true,
+  },
+  preview: {
+    // Same for preview mode
+    historyApiFallback: true,
+  },
 });
