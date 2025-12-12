@@ -26,7 +26,7 @@ export function Login() {
     }
     
     // Student -> student dashboard
-    navigate('/app', { replace: true })
+    navigate('/Homepage', { replace: true })
   }, [session, role, loading, navigate])
 
   async function onSubmit(e) {

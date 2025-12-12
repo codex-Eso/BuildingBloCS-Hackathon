@@ -1,0 +1,176 @@
+/* CommunityPage Styles */
+/* Imports base shared styles from HomePage */
+@import './HomePage.css';
+
+/* Community Section */
+.community-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-icon.community-icon {
+    background-color: #dcfce7;
+    padding: 8px;
+    border-radius: 12px;
+}
+
+.community-empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    background-color: white;
+    border-radius: 16px;
+}
+
+.community-empty-state .empty-icon {
+    margin-bottom: 16px;
+}
+
+.community-empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.community-empty-state p {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Community Posts */
+.community-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.community-post-card {
+    background-color: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-user-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-username {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.post-date {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.post-quest-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background-color: #fef3c7;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.post-content {
+    margin-bottom: 16px;
+}
+
+.post-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.post-caption {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+}
+
+.post-quest-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background-color: #f3f4f6;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.quest-completed-label {
+    color: #6b7280;
+}
+
+.quest-completed-name {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.post-actions {
+    display: flex;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.like-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.like-btn:hover {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+/* Post Image Styles */
+.post-image-container {
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    display: block;
+}
