@@ -37,11 +37,16 @@ export function SignUp() {
     setError(null)
     setInfo(null)
 
+    // Use production URL for email redirects
+    const redirectUrl = import.meta.env.PROD 
+      ? 'https://building-blocs.netlify.app/auth/callback'
+      : `${window.location.origin}/auth/callback`
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName.trim() || null,
           role: 'user',
