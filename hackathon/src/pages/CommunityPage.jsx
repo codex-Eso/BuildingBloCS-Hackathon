@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../SupaBase.js';
 import { useAuth } from '../auth/useAuth.js';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +8,18 @@ const CommunityPage = () => {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
     const [userPoints, setUserPoints] = useState(0);
+    const [userId, setUserId] = useState(null);
     const [communityPosts, setCommunityPosts] = useState([]);
     const [communityLoading, setCommunityLoading] = useState(true);
+    
+    // Track user's likes
+    const [userLikes, setUserLikes] = useState(new Set());
+    
+    // Comments state
+    const [postComments, setPostComments] = useState({});
+    const [commentInputs, setCommentInputs] = useState({});
+    const [expandedComments, setExpandedComments] = useState(new Set());
+    const [loadingComments, setLoadingComments] = useState({});
 
     // Handle logout
     const handleLogout = async () => {
@@ -24,12 +34,23 @@ const CommunityPage = () => {
             
             const { data, error } = await supabase
                 .from('user_details')
-                .select('points')
+                .select('user_id, points')
                 .eq('auth_id', user.id)
                 .single();
             
             if (!error && data) {
                 setUserPoints(data.points || 0);
+                setUserId(data.user_id);
+                
+                // Fetch user's likes
+                const { data: likes } = await supabase
+                    .from('post_likes')
+                    .select('post_id')
+                    .eq('user_id', data.user_id);
+                
+                if (likes) {
+                    setUserLikes(new Set(likes.map(l => l.post_id)));
+                }
             }
         };
 
@@ -49,7 +70,8 @@ const CommunityPage = () => {
                         user_details (name, username),
                         quests (title, points)
                     `)
-                    .order('created_at', { ascending: false });
+                    .order('created_at', { ascending: false })
+                    .order('post_id', { ascending: false });
                 
                 if (fetchError) {
                     console.error('Error fetching community posts:', fetchError);
@@ -64,6 +86,119 @@ const CommunityPage = () => {
 
         fetchCommunityPosts();
     }, []);
+
+    // Handle like/unlike
+    const handleLike = async (postId) => {
+        if (!userId) {
+            alert('Please log in to like posts!');
+            return;
+        }
+
+        const isLiked = userLikes.has(postId);
+
+        if (isLiked) {
+            // Unlike
+            const { error } = await supabase
+                .from('post_likes')
+                .delete()
+                .eq('post_id', postId)
+                .eq('user_id', userId);
+
+            if (!error) {
+                setUserLikes(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(postId);
+                    return newSet;
+                });
+                // Update local like count
+                setCommunityPosts(prev => prev.map(post => 
+                    post.post_id === postId 
+                        ? { ...post, number_of_likes: Math.max(0, (post.number_of_likes || 0) - 1) }
+                        : post
+                ));
+                // Update in database
+                await supabase
+                    .from('community_page')
+                    .update({ number_of_likes: communityPosts.find(p => p.post_id === postId)?.number_of_likes - 1 || 0 })
+                    .eq('post_id', postId);
+            }
+        } else {
+            // Like
+            const { error } = await supabase
+                .from('post_likes')
+                .insert({ post_id: postId, user_id: userId });
+
+            if (!error) {
+                setUserLikes(prev => new Set([...prev, postId]));
+                // Update local like count
+                setCommunityPosts(prev => prev.map(post => 
+                    post.post_id === postId 
+                        ? { ...post, number_of_likes: (post.number_of_likes || 0) + 1 }
+                        : post
+                ));
+                // Update in database
+                await supabase
+                    .from('community_page')
+                    .update({ number_of_likes: (communityPosts.find(p => p.post_id === postId)?.number_of_likes || 0) + 1 })
+                    .eq('post_id', postId);
+            }
+        }
+    };
+
+    // Fetch comments for a post
+    const fetchComments = async (postId) => {
+        setLoadingComments(prev => ({ ...prev, [postId]: true }));
+        
+        const { data, error } = await supabase
+            .from('post_comments')
+            .select('*, user_details(name, username)')
+            .eq('post_id', postId)
+            .order('created_at', { ascending: true });
+
+        if (!error) {
+            setPostComments(prev => ({ ...prev, [postId]: data || [] }));
+        }
+        setLoadingComments(prev => ({ ...prev, [postId]: false }));
+    };
+
+    // Toggle comments visibility
+    const toggleComments = (postId) => {
+        const newExpanded = new Set(expandedComments);
+        if (newExpanded.has(postId)) {
+            newExpanded.delete(postId);
+        } else {
+            newExpanded.add(postId);
+            // Fetch comments if not already loaded
+            if (!postComments[postId]) {
+                fetchComments(postId);
+            }
+        }
+        setExpandedComments(newExpanded);
+    };
+
+    // Submit a comment
+    const handleSubmitComment = async (postId) => {
+        const commentText = commentInputs[postId]?.trim();
+        if (!commentText || !userId) return;
+
+        const { data, error } = await supabase
+            .from('post_comments')
+            .insert({
+                post_id: postId,
+                user_id: userId,
+                comment_text: commentText
+            })
+            .select('*, user_details(name, username)')
+            .single();
+
+        if (!error && data) {
+            setPostComments(prev => ({
+                ...prev,
+                [postId]: [...(prev[postId] || []), data]
+            }));
+            setCommentInputs(prev => ({ ...prev, [postId]: '' }));
+        }
+    };
 
     const tabs = [
         { id: 'quests', label: 'Quests', icon: 'trophy', path: '/Homepage' },
@@ -253,13 +388,81 @@ const CommunityPage = () => {
                                         )}
                                     </div>
                                     <div className="post-actions">
-                                        <button className="like-btn">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <button 
+                                            className={`like-btn ${userLikes.has(post.post_id) ? 'liked' : ''}`}
+                                            onClick={() => handleLike(post.post_id)}
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill={userLikes.has(post.post_id) ? "#ef4444" : "none"} stroke={userLikes.has(post.post_id) ? "#ef4444" : "currentColor"} strokeWidth="2">
                                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                             </svg>
                                             <span>{post.number_of_likes || 0}</span>
                                         </button>
+                                        <button 
+                                            className="comment-btn"
+                                            onClick={() => toggleComments(post.post_id)}
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                            </svg>
+                                            <span>{postComments[post.post_id]?.length || 'Comments'}</span>
+                                        </button>
                                     </div>
+                                    
+                                    {/* Comments Section */}
+                                    {expandedComments.has(post.post_id) && (
+                                        <div className="comments-section">
+                                            {loadingComments[post.post_id] ? (
+                                                <div className="comments-loading">Loading comments...</div>
+                                            ) : (
+                                                <>
+                                                    <div className="comments-list">
+                                                        {(postComments[post.post_id] || []).length === 0 ? (
+                                                            <div className="no-comments">No comments yet. Be the first!</div>
+                                                        ) : (
+                                                            (postComments[post.post_id] || []).map(comment => (
+                                                                <div key={comment.id} className="comment-item">
+                                                                    <div className="comment-avatar">
+                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                                            <circle cx="12" cy="7" r="4" />
+                                                                        </svg>
+                                                                    </div>
+                                                                    <div className="comment-content">
+                                                                        <span className="comment-username">{comment.user_details?.name || 'Anonymous'}</span>
+                                                                        <p className="comment-text">{comment.comment_text}</p>
+                                                                        <span className="comment-time">{new Date(comment.created_at).toLocaleString()}</span>
+                                                                    </div>
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {userId && (
+                                                        <div className="comment-input-container">
+                                                            <input
+                                                                type="text"
+                                                                className="comment-input"
+                                                                placeholder="Write a comment..."
+                                                                value={commentInputs[post.post_id] || ''}
+                                                                onChange={(e) => setCommentInputs(prev => ({ ...prev, [post.post_id]: e.target.value }))}
+                                                                onKeyPress={(e) => e.key === 'Enter' && handleSubmitComment(post.post_id)}
+                                                            />
+                                                            <button 
+                                                                className="comment-submit-btn"
+                                                                onClick={() => handleSubmitComment(post.post_id)}
+                                                                disabled={!commentInputs[post.post_id]?.trim()}
+                                                            >
+                                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                    <line x1="22" y1="2" x2="11" y2="13" />
+                                                                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

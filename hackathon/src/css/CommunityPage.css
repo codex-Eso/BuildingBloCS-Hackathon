@@ -142,7 +142,8 @@
     border-top: 1px solid #f3f4f6;
 }
 
-.like-btn {
+.like-btn,
+.comment-btn {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -159,6 +160,128 @@
 .like-btn:hover {
     background-color: #fef2f2;
     color: #ef4444;
+}
+
+.like-btn.liked {
+    color: #ef4444;
+}
+
+.comment-btn:hover {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.comments-loading,
+.no-comments {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
+    padding: 16px;
+}
+
+.comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #6b7280, #9ca3af);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-username {
+    font-weight: 600;
+    font-size: 13px;
+    color: #1f2937;
+    margin-right: 8px;
+}
+
+.comment-text {
+    font-size: 14px;
+    color: #374151;
+    margin: 4px 0;
+    line-height: 1.4;
+}
+
+.comment-time {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.comment-input-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+    border-color: #3b82f6;
+}
+
+.comment-input::placeholder {
+    color: #9ca3af;
+}
+
+.comment-submit-btn {
+    width: 36px;
+    height: 36px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.comment-submit-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.comment-submit-btn:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
 }
 
 /* Post Image Styles */

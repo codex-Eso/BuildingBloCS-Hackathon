@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../SupaBase.js'
 import { useAuth } from '../auth/useAuth.js'
+import '../css/AuthPages.css'
 
 export function SignUp() {
   const navigate = useNavigate()
@@ -86,74 +87,104 @@ export function SignUp() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '64px auto', fontFamily: 'system-ui' }}>
-      <h1>Student Sign Up</h1>
-      <p style={{ color: '#555' }}>Create a student account.</p>
-
-      <form onSubmit={onSubmit} style={{ display: 'grid', gap: 12 }}>
-        <label>
-          Full name (optional)
-          <input
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            type="text"
-            autoComplete="name"
-            style={{ width: '100%', padding: 10, marginTop: 6 }}
-          />
-        </label>
-
-        <label>
-          Email
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            autoComplete="email"
-            required
-            style={{ width: '100%', padding: 10, marginTop: 6 }}
-          />
-        </label>
-
-        <label>
-          Password (min 8 chars)
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            style={{ width: '100%', padding: 10, marginTop: 6 }}
-          />
-        </label>
-
-        {error ? (
-          <div style={{ color: '#b00020', background: '#ffeef0', padding: 10, borderRadius: 8 }}>
-            {error}
+    <div className="auth-page">
+      <div className="auth-container">
+        {/* Logo */}
+        <div className="auth-logo">
+          <div className="auth-logo-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.5 0 3-.3 4.3-.9" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M17 8c-4 0-6 3-6 6s3 6 6 6 6-3 6-6" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M20 5l-3 3" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </div>
-        ) : null}
+          <span className="auth-logo-text">EcoQuest</span>
+        </div>
 
-        {info ? (
-          <div style={{ color: '#0b5', background: '#eefaf0', padding: 10, borderRadius: 8 }}>
-            {info}
+        {/* Header */}
+        <div className="auth-header">
+          <h1 className="auth-title">Join EcoQuest!</h1>
+          <p className="auth-subtitle">Create an account to start your eco journey</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={onSubmit} className="auth-form">
+          <div className="form-field">
+            <label htmlFor="fullName">Full Name (optional)</label>
+            <input
+              id="fullName"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              type="text"
+              autoComplete="name"
+              placeholder="Enter your name"
+            />
           </div>
-        ) : null}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{ padding: 10, borderRadius: 8, cursor: 'pointer' }}
-        >
-          {submitting ? 'Creating…' : 'Create account'}
-        </button>
-      </form>
+          <div className="form-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
 
-      <p style={{ marginTop: 16 }}>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
-      <p style={{ marginTop: 8 }}>
-        Need an admin account? <Link to="/admin/signup">Admin Sign Up</Link>
-      </p>
+          <div className="form-field">
+            <label htmlFor="password">Password (min 8 characters)</label>
+            <input
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              autoComplete="new-password"
+              placeholder="Create a password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          {error && (
+            <div className="auth-error">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              {error}
+            </div>
+          )}
+
+          {info && (
+            <div className="auth-info">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              {info}
+            </div>
+          )}
+
+          <button type="submit" disabled={submitting} className="auth-submit-btn primary">
+            {submitting ? 'Creating account...' : 'Create Account'}
+          </button>
+        </form>
+
+        {/* Links */}
+        <div className="auth-links">
+          <p>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+          <div className="auth-divider"><span>or</span></div>
+          <p>
+            Need an admin account? <Link to="/admin/signup" className="admin-link">Admin Sign Up</Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../SupaBase.js'
 import { useAuth } from '../auth/useAuth.js'
+import '../css/AuthPages.css'
 
 export function Login() {
   const navigate = useNavigate()
@@ -60,57 +61,82 @@ export function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '64px auto', fontFamily: 'system-ui' }}>
-      <h1>Student Login</h1>
-      <p style={{ color: '#555' }}>Sign in to continue.</p>
-
-      <form onSubmit={onSubmit} style={{ display: 'grid', gap: 12 }}>
-        <label>
-          Email
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            autoComplete="email"
-            required
-            style={{ width: '100%', padding: 10, marginTop: 6 }}
-          />
-        </label>
-
-        <label>
-          Password
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            autoComplete="current-password"
-            required
-            minLength={8}
-            style={{ width: '100%', padding: 10, marginTop: 6 }}
-          />
-        </label>
-
-        {error ? (
-          <div style={{ color: '#b00020', background: '#ffeef0', padding: 10, borderRadius: 8 }}>
-            {error}
+    <div className="auth-page">
+      <div className="auth-container">
+        {/* Logo */}
+        <div className="auth-logo">
+          <div className="auth-logo-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.5 0 3-.3 4.3-.9" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M17 8c-4 0-6 3-6 6s3 6 6 6 6-3 6-6" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M20 5l-3 3" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </div>
-        ) : null}
+          <span className="auth-logo-text">EcoQuest</span>
+        </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{ padding: 10, borderRadius: 8, cursor: 'pointer' }}
-        >
-          {submitting ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
+        {/* Header */}
+        <div className="auth-header">
+          <h1 className="auth-title">Welcome Back!</h1>
+          <p className="auth-subtitle">Sign in to continue your eco journey</p>
+        </div>
 
-      <p style={{ marginTop: 16 }}>
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </p>
-      <p style={{ marginTop: 8 }}>
-        Admin? <Link to="/admin/login">Admin Login</Link>
-      </p>
+        {/* Form */}
+        <form onSubmit={onSubmit} className="auth-form">
+          <div className="form-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          {error && (
+            <div className="auth-error">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={submitting} className="auth-submit-btn primary">
+            {submitting ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        {/* Links */}
+        <div className="auth-links">
+          <p>
+            Don't have an account? <Link to="/signup">Sign up</Link>
+          </p>
+          <div className="auth-divider"><span>or</span></div>
+          <p>
+            Admin? <Link to="/admin/login" className="admin-link">Admin Login</Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

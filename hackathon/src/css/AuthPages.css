@@ -1,0 +1,253 @@
+/* Auth Pages Styles - Login, SignUp, AdminLogin, AdminSignUp */
+
+.auth-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f5ff 0%, #e0f2fe 50%, #dcfce7 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo */
+.auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.auth-logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.auth-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Admin Badge */
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #1f2937;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.form-field input:focus {
+    outline: none;
+    border-color: #22c55e;
+    background: white;
+}
+
+.form-field input::placeholder {
+    color: #9ca3af;
+}
+
+/* Messages */
+.auth-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    border: 1px solid #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-info {
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    border: 1px solid #86efac;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Submit Button */
+.auth-submit-btn {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.auth-submit-btn.primary {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+}
+
+.auth-submit-btn.primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+}
+
+.auth-submit-btn.admin {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.auth-submit-btn.admin:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+}
+
+.auth-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Links */
+.auth-links {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.auth-links p {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.auth-links a {
+    color: #22c55e;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-links a:hover {
+    color: #16a34a;
+    text-decoration: underline;
+}
+
+.auth-links a.admin-link {
+    color: #3b82f6;
+}
+
+.auth-links a.admin-link:hover {
+    color: #1d4ed8;
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.auth-divider span {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+
+    .auth-title {
+        font-size: 22px;
+    }
+
+    .auth-logo-text {
+        font-size: 24px;
+    }
+}

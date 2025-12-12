@@ -12,6 +12,8 @@ import { AdminDashboard } from './pages/AdminDashboard.jsx'
 import { NotFound } from './pages/NotFound.jsx'
 import HomePage from './pages/HomePage.jsx'
 import CommunityPage from './pages/CommunityPage.jsx'
+import RedeemPage from './pages/RedeemPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 
 
 function App() {
@@ -41,6 +43,24 @@ function App() {
           element={
             <ProtectedRoute>
               <CommunityPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/redeem"
+          element={
+            <ProtectedRoute>
+              <RedeemPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
