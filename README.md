@@ -128,7 +128,7 @@ hackathon/
 
 ---
 
-## 🌍 Supported Charities
+## 🌍 Supported Charities (For future enhancements)
 
 - Global Reforestation Project
 - Ocean Conservation Fund
