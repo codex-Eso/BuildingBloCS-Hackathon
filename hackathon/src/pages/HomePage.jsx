@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../SupaBase.js';
 import { useAuth } from '../auth/useAuth.js';
 import { useNavigate } from 'react-router-dom';
@@ -33,6 +33,32 @@ const HomePage = () => {
         navigate('/login');
     };
 
+    // Function to fetch user submissions - can be called to refresh
+    const fetchUserSubmissions = useCallback(async (userIdToFetch) => {
+        if (!userIdToFetch) return;
+        
+        const { data: submissions, error: subError } = await supabase
+            .from('quest_submissions')
+            .select('quest_id, status, submitted_at')
+            .eq('user_id', userIdToFetch)
+            .order('submitted_at', { ascending: false });
+        
+        if (subError) {
+            console.error('Error fetching submissions:', subError);
+        } else {
+            // Keep only the latest submission for each quest
+            const latestSubmissions = [];
+            const seenQuests = new Set();
+            for (const sub of submissions || []) {
+                if (!seenQuests.has(sub.quest_id)) {
+                    seenQuests.add(sub.quest_id);
+                    latestSubmissions.push(sub);
+                }
+            }
+            setUserSubmissions(latestSubmissions);
+        }
+    }, []);
+
     // Fetch user details (points and user_id)
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -51,21 +77,36 @@ const HomePage = () => {
                 setUserId(data.user_id);
                 
                 // Fetch user's quest submissions
-                const { data: submissions, error: subError } = await supabase
-                    .from('quest_submissions')
-                    .select('quest_id, status')
-                    .eq('user_id', data.user_id);
-                
-                if (subError) {
-                    console.error('Error fetching submissions:', subError);
-                } else {
-                    setUserSubmissions(submissions || []);
-                }
+                fetchUserSubmissions(data.user_id);
             }
         };
 
         fetchUserDetails();
-    }, [user]);
+    }, [user, fetchUserSubmissions]);
+
+    // Refresh data when page becomes visible (user switches back to tab)
+    useEffect(() => {
+        const handleVisibilityChange = async () => {
+            if (document.visibilityState === 'visible' && userId) {
+                // Refresh user points
+                const { data } = await supabase
+                    .from('user_details')
+                    .select('points')
+                    .eq('user_id', userId)
+                    .single();
+                
+                if (data) {
+                    setUserPoints(data.points || 0);
+                }
+                
+                // Refresh submissions
+                fetchUserSubmissions(userId);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [userId, fetchUserSubmissions]);
 
     // Fetch quests from Supabase
     useEffect(() => {
@@ -202,7 +243,11 @@ const HomePage = () => {
             }
             
             // Update local state to reflect the pending submission
-            setUserSubmissions(prev => [...prev, { quest_id: selectedQuest.id, status: 'pending' }]);
+            // Replace any existing submission for this quest with the new pending one
+            setUserSubmissions(prev => {
+                const filtered = prev.filter(s => s.quest_id !== selectedQuest.id);
+                return [...filtered, { quest_id: selectedQuest.id, status: 'pending' }];
+            });
             
             // Close modal and reset
             setShowCompletionModal(false);
